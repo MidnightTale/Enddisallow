@@ -16,10 +16,13 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        url = "https://repo.menthamc.com/repository/maven-public/"
+    }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT")
+    compileOnly("me.earthme.luminol:luminol-api:1.21.5-R0.1-20250605.230234-26")
 }
 
 tasks {
