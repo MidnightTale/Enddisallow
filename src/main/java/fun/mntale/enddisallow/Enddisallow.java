@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,19 +24,20 @@ public final class Enddisallow extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPortalEyeInsert(PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null) return;
-        if (event.getItem() == null || event.getItem().getType() != Material.ENDER_EYE) return;
 
-        Block block = event.getClickedBlock();
-        if (block.getType() != Material.END_PORTAL_FRAME) return;
+        getServer().getRegionScheduler().run(this, event.getPlayer().getLocation(), (ScheduledTask task) -> {
+            if (event.getClickedBlock() == null) return;
+            if (event.getItem() == null || event.getItem().getType() != Material.ENDER_EYE) return;
 
-        getServer().getRegionScheduler().run(this, block.getLocation(), (ScheduledTask task) -> {
-            EndPortalFrame frame = (EndPortalFrame) block.getBlockData();
+            Block block = event.getClickedBlock();
+            if (block.getType() != Material.END_PORTAL_FRAME) return;
+            BlockData data = block.getBlockData();
+            if (!(data instanceof EndPortalFrame frame)) return;
+
             if (!frame.hasEye()) {
                 event.setCancelled(true);
 
                 Player player = event.getPlayer();
-
                 player.sendActionBar(Component.text("You cannot activate the End Portal.", NamedTextColor.RED));
                 player.playSound(
                         player.getLocation(),
