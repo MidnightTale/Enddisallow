@@ -24,20 +24,21 @@ public final class Enddisallow extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPortalEyeInsert(PlayerInteractEvent event) {
+        if (event.getClickedBlock() == null) return;
+        if (event.getItem() == null || event.getItem().getType() != Material.ENDER_EYE) return;
 
-        getServer().getRegionScheduler().run(this, event.getPlayer().getLocation(), (ScheduledTask task) -> {
-            if (event.getClickedBlock() == null) return;
-            if (event.getItem() == null || event.getItem().getType() != Material.ENDER_EYE) return;
+        Block block = event.getClickedBlock();
+        if (block.getType() != Material.END_PORTAL_FRAME) return;
 
-            Block block = event.getClickedBlock();
-            if (block.getType() != Material.END_PORTAL_FRAME) return;
-            BlockData data = block.getBlockData();
-            if (!(data instanceof EndPortalFrame frame)) return;
+        BlockData data = block.getBlockData();
+        if (!(data instanceof EndPortalFrame frame)) return;
 
-            if (!frame.hasEye()) {
-                event.setCancelled(true);
+        if (!frame.hasEye()) {
+            event.setCancelled(true);
 
-                Player player = event.getPlayer();
+            Player player = event.getPlayer();
+
+            getServer().getRegionScheduler().run(this, player.getLocation(), (ScheduledTask task) -> {
                 player.sendActionBar(Component.text("You cannot activate the End Portal.", NamedTextColor.RED));
                 player.playSound(
                         player.getLocation(),
@@ -46,7 +47,7 @@ public final class Enddisallow extends JavaPlugin implements Listener {
                         1.0f,
                         0.6f
                 );
-            }
-        });
+            });
+        }
     }
 }
